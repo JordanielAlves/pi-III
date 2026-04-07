@@ -84,7 +84,7 @@ open sgto/login.html
 
 O projeto foi conduzido com abordagem ágil, organizado em sprints semanais e acompanhado via **Trello**.
 
-🔗 **Quadro Trello:** `[inserir link do quadro aqui]`
+🔗 **Quadro Trello:** `https://trello.com/b/6bEWOa5j/sgto`
 
 ### Cronograma
 
