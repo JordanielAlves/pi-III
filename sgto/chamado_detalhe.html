@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGTO — Chamado #0044</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B1C3F;--blue:#1A56DB;--cyan:#06B6D4;--light:#F4F7FF;--white:#FFFFFF;--gray:#8896B3;--border:#E2E8F5;--sidebar:#0D2055;--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--purple:#8B5CF6;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);display:flex;min-height:100vh;}
+  .sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh;}
+  .logo{padding:0 24px 32px;display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;}
+  .nav-section{padding:0 16px;margin-bottom:8px;}
+  .nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:2px;}
+  .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+  .nav-item.active{background:rgba(26,86,219,0.4);color:white;font-weight:500;}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .badge{margin-left:auto;background:var(--blue);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+  .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.1);}
+  .user-info{display:flex;align-items:center;gap:10px;}
+  .avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+  .user-name{font-size:13px;font-weight:500;color:white;}
+  .user-role{font-size:11px;color:var(--gray);}
+  .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+  .topbar{background:white;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  .topbar-left{display:flex;align-items:center;gap:12px;}
+  .back-btn{color:var(--gray);font-size:14px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;}
+  .back-btn:hover{color:var(--blue);}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+  .btn{padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--blue);color:white;}
+  .btn-success{background:var(--green);color:white;}
+  .btn-outline{background:white;color:var(--navy);border:1.5px solid var(--border);}
+  .content{padding:28px 32px;display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+  .card{background:white;border-radius:14px;border:1px solid var(--border);padding:24px;margin-bottom:16px;}
+  .card h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--navy);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .priority-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;background:#FEE2E2;color:var(--red);}
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+  .chamado-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--navy);margin:12px 0;}
+  .chamado-desc{font-size:14px;color:#4B5680;line-height:1.7;}
+  .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
+  .meta-item label{font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;}
+  .meta-item span{font-size:14px;color:var(--navy);font-weight:500;}
+  .timeline{display:flex;flex-direction:column;gap:0;}
+  .tl-item{display:flex;gap:14px;padding-bottom:20px;position:relative;}
+  .tl-item:not(:last-child)::before{content:'';position:absolute;left:17px;top:34px;bottom:0;width:1px;background:var(--border);}
+  .tl-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+  .tl-dot.blue{background:#EEF3FF;}
+  .tl-dot.green{background:#D1FAE5;}
+  .tl-dot.yellow{background:#FEF3C7;}
+  .tl-content{}
+  .tl-title{font-size:13px;font-weight:500;color:var(--navy);}
+  .tl-time{font-size:11px;color:var(--gray);margin-top:2px;}
+  .tl-note{font-size:13px;color:#4B5680;margin-top:6px;background:var(--light);padding:10px 12px;border-radius:8px;line-height:1.5;}
+  .comment-input{display:flex;gap:10px;margin-top:12px;}
+  .comment-input input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:var(--light);}
+  .comment-input input:focus{border-color:var(--blue);}
+  .status-actions{display:flex;flex-direction:column;gap:8px;}
+  .status-opt{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;background:var(--light);}
+  .status-opt:hover{border-color:var(--blue);background:#EEF3FF;}
+  .status-opt.current{border-color:var(--purple);background:#EDE9FE;color:var(--purple);font-weight:500;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">✈</div><div class="logo-text">SGTO</div></div>
+  <div class="nav-section">
+    <div class="nav-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><span class="icon">⊞</span> Dashboard</a>
+    <a href="kanban.html" class="nav-item"><span class="icon">▦</span> Kanban <span class="badge">12</span></a>
+    <a href="novo_chamado.html" class="nav-item"><span class="icon">＋</span> Novo Chamado</a>
+    <a href="chamados.html" class="nav-item active"><span class="icon">☰</span> Todos os Chamados</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Gestão</div>
+    <a href="calendario.html" class="nav-item"><span class="icon">📅</span> Calendário</a>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Usuários</a>
+    <a href="#" class="nav-item"><span class="icon">📊</span> Relatórios</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="avatar">J</div><div><div class="user-name">Jordaniel</div><div class="user-role">Analista de TI</div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="chamados.html" class="back-btn">← Chamados</a>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="topbar-title">Chamado #0044</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-outline">✏️ Editar</button>
+      <button class="btn btn-success">✓ Concluir Chamado</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="priority-badge">🟣 Crítica</span>
+          <span class="status-badge" style="background:#EDE9FE;color:var(--purple)">● Aberto</span>
+          <span style="font-size:12px;color:var(--gray);margin-left:auto;">Aberto em 06/04/2026 às 09:14</span>
+        </div>
+        <div class="chamado-title">Banco Firebird não respondendo — Matriz</div>
+        <div class="chamado-desc">
+          O servidor de banco de dados Firebird da unidade Matriz (Goiânia, GO) parou de responder às conexões do ERP Sankhya por volta das 08h50 de hoje. Todos os usuários do sistema estão sem acesso. O serviço aparentemente está rodando no servidor, mas as conexões estão sendo recusadas. Suspeita-se de problema com cache de páginas ou configuração de memória no servidor ESXi virtualizado.
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><label>Solicitante</label><span>Adm. Financeiro</span></div>
+          <div class="meta-item"><label>Responsável</label><span>Jordaniel — TI</span></div>
+          <div class="meta-item"><label>Categoria</label><span>🗄️ Banco de Dados</span></div>
+          <div class="meta-item"><label>Unidade</label><span>Matriz — Goiânia, GO</span></div>
+          <div class="meta-item"><label>Prazo</label><span>06/04/2026 — Hoje</span></div>
+          <div class="meta-item"><label>Impacto</label><span>Todos os usuários afetados</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📋 Histórico de Atualizações</h3>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot blue">📬</div>
+            <div class="tl-content">
+              <div class="tl-title">Chamado aberto</div>
+              <div class="tl-time">06/04/2026 às 09:14 — Adm. Financeiro</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot yellow">👀</div>
+            <div class="tl-content">
+              <div class="tl-title">Chamado assumido por Jordaniel</div>
+              <div class="tl-time">06/04/2026 às 09:22 — Jordaniel</div>
+              <div class="tl-note">Verificando logs do servidor Firebird. Conectando via ESXi para diagnóstico.</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot yellow">🔍</div>
+            <div class="tl-content">
+              <div class="tl-title">Diagnóstico em andamento</div>
+              <div class="tl-time">06/04/2026 às 09:45 — Jordaniel</div>
+              <div class="tl-note">Identificado possível problema com DefaultDbCachePages. Verificando firebird.conf no servidor virtualizado.</div>
+            </div>
+          </div>
+        </div>
+        <div class="comment-input">
+          <input type="text" placeholder="Adicionar atualização ou comentário...">
+          <button class="btn btn-primary">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h3>🔄 Alterar Status</h3>
+        <div class="status-actions">
+          <div class="status-opt current">🟣 Aberto (atual)</div>
+          <div class="status-opt">🟡 Em Andamento</div>
+          <div class="status-opt">🟢 Concluído</div>
+          <div class="status-opt">⛔ Cancelado</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📊 Informações</h3>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div><div style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Tempo aberto</div><div style="font-size:14px;color:var(--navy);font-weight:500;">1h 32min</div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;"><div style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">SLA</div><div style="font-size:14px;color:var(--red);font-weight:500;">⚠️ Crítico — 2h restantes</div></div>
+          <div style="border-top:1px solid var(--border);padding-top:12px;"><div style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Chamados similares</div><div style="font-size:13px;color:var(--blue);cursor:pointer;">#0036 — Cache Firebird (concluído)</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔔 Notificações</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> Jordaniel (responsável)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox" checked> Adm. Financeiro (solicitante)</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;"><input type="checkbox"> Diretoria</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

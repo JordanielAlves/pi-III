@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGTO — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1C3F; --blue: #1A56DB; --cyan: #06B6D4;
+    --light: #F4F7FF; --white: #FFFFFF; --gray: #8896B3;
+    --border: #E2E8F5; --sidebar: #0D2055;
+    --green: #10B981; --yellow: #F59E0B; --red: #EF4444; --purple: #8B5CF6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--light); display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px; background: var(--sidebar);
+    display: flex; flex-direction: column;
+    padding: 24px 0; position: fixed; height: 100vh;
+  }
+  .logo { padding: 0 24px 32px; display: flex; align-items: center; gap: 12px; }
+  .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--cyan), var(--blue)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .logo-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: white; }
+  .nav-section { padding: 0 16px; margin-bottom: 8px; }
+  .nav-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 8px;
+    color: rgba(255,255,255,0.6); font-size: 14px;
+    cursor: pointer; transition: all .2s;
+    text-decoration: none; margin-bottom: 2px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.08); color: white; }
+  .nav-item.active { background: rgba(26,86,219,0.4); color: white; font-weight: 500; }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+  .badge { margin-left: auto; background: var(--blue); color: white; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+  .badge.red { background: var(--red); }
+  .sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .user-info { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--cyan), var(--blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; }
+  .user-name { font-size: 13px; font-weight: 500; color: white; }
+  .user-role { font-size: 11px; color: var(--gray); }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; }
+  .topbar {
+    background: white; padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); }
+  .topbar-actions { display: flex; gap: 12px; align-items: center; }
+  .btn { padding: 8px 18px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--blue); color: white; box-shadow: 0 2px 8px rgba(26,86,219,0.3); }
+  .btn-primary:hover { background: #1048C0; }
+  .btn-outline { background: white; color: var(--navy); border: 1.5px solid var(--border); }
+  .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+
+  .content { padding: 28px 32px; }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: white; border-radius: 14px;
+    padding: 20px; border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.yellow::before { background: var(--yellow); }
+  .stat-card.red::before { background: var(--red); }
+  .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 8px; font-weight: 500; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--navy); }
+  .stat-sub { font-size: 11px; color: var(--gray); margin-top: 4px; }
+  .stat-icon { position: absolute; right: 16px; top: 16px; font-size: 24px; opacity: 0.15; }
+
+  /* KANBAN */
+  .kanban-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .kanban-header h3 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+  .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .kanban-col { background: white; border-radius: 14px; border: 1px solid var(--border); overflow: hidden; }
+  .col-header { padding: 16px 16px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .col-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--navy); }
+  .col-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .col-count { background: var(--light); color: var(--gray); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .col-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 200px; }
+  .card {
+    background: var(--light); border-radius: 10px;
+    padding: 14px; border: 1.5px solid var(--border);
+    cursor: pointer; transition: all .2s;
+  }
+  .card:hover { border-color: var(--blue); box-shadow: 0 2px 12px rgba(26,86,219,0.1); transform: translateY(-1px); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-id { font-size: 10px; color: var(--gray); font-weight: 600; }
+  .priority { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+  .priority.alta { background: #FEE2E2; color: var(--red); }
+  .priority.media { background: #FEF3C7; color: #92400E; }
+  .priority.baixa { background: #D1FAE5; color: #065F46; }
+  .priority.critica { background: #EDE9FE; color: #5B21B6; }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--navy); margin-bottom: 10px; line-height: 1.4; }
+  .card-meta { display: flex; align-items: center; justify-content: space-between; }
+  .card-tag { font-size: 10px; color: var(--gray); background: white; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border); }
+  .card-assignee { width: 22px; height: 22px; background: linear-gradient(135deg, var(--cyan), var(--blue)); border-radius: 50%; font-size: 9px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; }
+  .add-card { width: 100%; padding: 10px; background: none; border: 1.5px dashed var(--border); border-radius: 8px; color: var(--gray); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; transition: all .2s; }
+  .add-card:hover { border-color: var(--blue); color: var(--blue); background: #F0F4FF; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">✈</div>
+    <div class="logo-text">SGTO</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Principal</div>
+    <a href="dashboard.html" class="nav-item active"><span class="icon">⊞</span> Dashboard</a>
+    <a href="kanban.html" class="nav-item"><span class="icon">▦</span> Kanban <span class="badge">12</span></a>
+    <a href="novo_chamado.html" class="nav-item"><span class="icon">＋</span> Novo Chamado</a>
+    <a href="chamados.html" class="nav-item"><span class="icon">☰</span> Todos os Chamados</a>
+  </div>
+
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Gestão</div>
+    <a href="calendario.html" class="nav-item"><span class="icon">📅</span> Calendário</a>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Usuários</a>
+    <a href="#" class="nav-item"><span class="icon">📊</span> Relatórios</a>
+  </div>
+
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Sistema</div>
+    <a href="#" class="nav-item"><span class="icon">⚙</span> Configurações</a>
+    <a href="login.html" class="nav-item"><span class="icon">⏻</span> Sair</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="avatar">J</div>
+      <div>
+        <div class="user-name">Jordaniel</div>
+        <div class="user-role">Analista de TI</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Dashboard</div>
+    <div class="topbar-actions">
+      <button class="btn btn-outline">🔔 Notificações <span class="badge red" style="margin-left:4px">3</span></button>
+      <a href="novo_chamado.html" class="btn btn-primary">＋ Novo Chamado</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">🎫</div>
+        <div class="stat-label">Total de Chamados</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub">+8 esta semana</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-label">Em Andamento</div>
+        <div class="stat-value">12</div>
+        <div class="stat-sub">3 com prazo hoje</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-label">Concluídos</div>
+        <div class="stat-value">31</div>
+        <div class="stat-sub">66% do total</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">🔴</div>
+        <div class="stat-label">Alta Prioridade</div>
+        <div class="stat-value">4</div>
+        <div class="stat-sub">Requerem atenção</div>
+      </div>
+    </div>
+
+    <div class="kanban-header">
+      <h3>Quadro Kanban — Chamados Ativos</h3>
+      <a href="kanban.html" class="btn btn-outline" style="font-size:12px;">Ver quadro completo →</a>
+    </div>
+
+    <div class="kanban-board">
+
+      <!-- A FAZER -->
+      <div class="kanban-col">
+        <div class="col-header">
+          <div class="col-title">
+            <div class="col-dot" style="background:#94A3B8"></div>
+            A Fazer
+          </div>
+          <span class="col-count">4</span>
+        </div>
+        <div class="col-body">
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0041</span><span class="priority alta">Alta</span></div>
+            <div class="card-title">Configurar VPN WireGuard para filial PT6A</div>
+            <div class="card-meta"><span class="card-tag">Rede</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0042</span><span class="priority media">Média</span></div>
+            <div class="card-title">Atualizar política de AppLocker no AD</div>
+            <div class="card-meta"><span class="card-tag">Segurança</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0043</span><span class="priority baixa">Baixa</span></div>
+            <div class="card-title">Inventário de equipamentos — filial SP</div>
+            <div class="card-meta"><span class="card-tag">Infraestrutura</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0044</span><span class="priority critica">Crítica</span></div>
+            <div class="card-title">Banco Firebird não respondendo — Matriz</div>
+            <div class="card-meta"><span class="card-tag">Banco de Dados</span><div class="card-assignee">J</div></div>
+          </div>
+          <button class="add-card" onclick="window.location='novo_chamado.html'">+ Adicionar chamado</button>
+        </div>
+      </div>
+
+      <!-- EM ANDAMENTO -->
+      <div class="kanban-col">
+        <div class="col-header">
+          <div class="col-title">
+            <div class="col-dot" style="background:#F59E0B"></div>
+            Em Andamento
+          </div>
+          <span class="col-count">3</span>
+        </div>
+        <div class="col-body">
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0038</span><span class="priority alta">Alta</span></div>
+            <div class="card-title">Migração servidor Windows 2012 → 2025</div>
+            <div class="card-meta"><span class="card-tag">Servidor</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0039</span><span class="priority media">Média</span></div>
+            <div class="card-title">Configurar backup automático TrueNAS</div>
+            <div class="card-meta"><span class="card-tag">Storage</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0040</span><span class="priority baixa">Baixa</span></div>
+            <div class="card-title">Treinamento usuários — novo sistema ERP</div>
+            <div class="card-meta"><span class="card-tag">ERP Sankhya</span><div class="card-assignee">J</div></div>
+          </div>
+          <button class="add-card" onclick="window.location='novo_chamado.html'">+ Adicionar chamado</button>
+        </div>
+      </div>
+
+      <!-- CONCLUÍDO -->
+      <div class="kanban-col">
+        <div class="col-header">
+          <div class="col-title">
+            <div class="col-dot" style="background:#10B981"></div>
+            Concluído
+          </div>
+          <span class="col-count">5</span>
+        </div>
+        <div class="col-body">
+          <div class="card" style="opacity:0.7" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0035</span><span class="priority baixa">Baixa</span></div>
+            <div class="card-title">Instalar impressora — setor financeiro</div>
+            <div class="card-meta"><span class="card-tag">Hardware</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" style="opacity:0.7" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0036</span><span class="priority media">Média</span></div>
+            <div class="card-title">Correção cache Firebird — DefaultDbCachePages</div>
+            <div class="card-meta"><span class="card-tag">Banco de Dados</span><div class="card-assignee">J</div></div>
+          </div>
+          <div class="card" style="opacity:0.7" onclick="window.location='chamado_detalhe.html'">
+            <div class="card-top"><span class="card-id">#0037</span><span class="priority alta">Alta</span></div>
+            <div class="card-title">Investigar ataque BEC — e-mail fraudulento</div>
+            <div class="card-meta"><span class="card-tag">Segurança</span><div class="card-assignee">J</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

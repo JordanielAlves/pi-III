@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGTO — Novo Chamado</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --navy:#0B1C3F;--blue:#1A56DB;--cyan:#06B6D4;--light:#F4F7FF;--white:#FFFFFF;--gray:#8896B3;--border:#E2E8F5;--sidebar:#0D2055;--green:#10B981;--yellow:#F59E0B;--red:#EF4444; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);display:flex;min-height:100vh;}
+  .sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh;}
+  .logo{padding:0 24px 32px;display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;}
+  .nav-section{padding:0 16px;margin-bottom:8px;}
+  .nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:2px;}
+  .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+  .nav-item.active{background:rgba(26,86,219,0.4);color:white;font-weight:500;}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .badge{margin-left:auto;background:var(--blue);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+  .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.1);}
+  .user-info{display:flex;align-items:center;gap:10px;}
+  .avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+  .user-name{font-size:13px;font-weight:500;color:white;}
+  .user-role{font-size:11px;color:var(--gray);}
+  .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+  .topbar{background:white;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  .topbar-left{display:flex;align-items:center;gap:12px;}
+  .back-btn{color:var(--gray);font-size:14px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:6px;}
+  .back-btn:hover{color:var(--blue);}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--navy);}
+  .content{padding:32px;max-width:800px;margin:0 auto;width:100%;}
+  .form-card{background:white;border-radius:16px;border:1px solid var(--border);padding:32px;margin-bottom:20px;}
+  .form-card h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:1/-1;}
+  label{font-size:13px;font-weight:500;color:var(--navy);}
+  label span{color:var(--red);margin-left:2px;}
+  input,select,textarea{padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--navy);background:var(--light);outline:none;transition:all .2s;width:100%;}
+  input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,0.1);background:white;}
+  textarea{resize:vertical;min-height:120px;}
+  .priority-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .priority-opt{padding:12px 8px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;background:var(--light);}
+  .priority-opt:hover{border-color:var(--blue);}
+  .priority-opt.selected-baixa{border-color:#10B981;background:#D1FAE5;}
+  .priority-opt.selected-media{border-color:#F59E0B;background:#FEF3C7;}
+  .priority-opt.selected-alta{border-color:#EF4444;background:#FEE2E2;}
+  .priority-opt.selected-critica{border-color:#8B5CF6;background:#EDE9FE;}
+  .priority-emoji{font-size:20px;display:block;margin-bottom:4px;}
+  .priority-label{font-size:12px;font-weight:600;color:var(--navy);}
+  .file-upload{border:2px dashed var(--border);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--light);}
+  .file-upload:hover{border-color:var(--blue);background:#F0F4FF;}
+  .file-upload p{font-size:13px;color:var(--gray);margin-top:8px;}
+  .actions{display:flex;gap:12px;justify-content:flex-end;}
+  .btn{padding:12px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+  .btn-primary{background:linear-gradient(135deg,var(--blue),#1048C0);color:white;box-shadow:0 4px 14px rgba(26,86,219,0.3);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,0.4);}
+  .btn-outline{background:white;color:var(--navy);border:1.5px solid var(--border);}
+  .btn-outline:hover{border-color:var(--blue);color:var(--blue);}
+  .category-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .cat-opt{padding:14px 10px;border:1.5px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .2s;background:var(--light);}
+  .cat-opt:hover,.cat-opt.selected{border-color:var(--blue);background:#EEF3FF;}
+  .cat-emoji{font-size:22px;display:block;margin-bottom:6px;}
+  .cat-label{font-size:12px;font-weight:500;color:var(--navy);}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">✈</div><div class="logo-text">SGTO</div></div>
+  <div class="nav-section">
+    <div class="nav-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><span class="icon">⊞</span> Dashboard</a>
+    <a href="kanban.html" class="nav-item"><span class="icon">▦</span> Kanban <span class="badge">12</span></a>
+    <a href="novo_chamado.html" class="nav-item active"><span class="icon">＋</span> Novo Chamado</a>
+    <a href="chamados.html" class="nav-item"><span class="icon">☰</span> Todos os Chamados</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Gestão</div>
+    <a href="calendario.html" class="nav-item"><span class="icon">📅</span> Calendário</a>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Usuários</a>
+    <a href="#" class="nav-item"><span class="icon">📊</span> Relatórios</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="avatar">J</div><div><div class="user-name">Jordaniel</div><div class="user-role">Analista de TI</div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="chamados.html" class="back-btn">← Voltar</a>
+      <div style="width:1px;height:20px;background:var(--border)"></div>
+      <div class="topbar-title">Novo Chamado</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="form-card">
+      <h3>📋 Informações do Chamado</h3>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Título do chamado <span>*</span></label>
+          <input type="text" placeholder="Ex: Computador não liga — setor financeiro">
+        </div>
+        <div class="form-group">
+          <label>Solicitante <span>*</span></label>
+          <input type="text" value="Jordaniel — TI">
+        </div>
+        <div class="form-group">
+          <label>Unidade / Filial <span>*</span></label>
+          <select>
+            <option>Matriz — Goiânia, GO</option>
+            <option>Filial SP — São Paulo</option>
+            <option>Filial RJ — Rio de Janeiro</option>
+            <option>PT6A — Remoto</option>
+            <option>Escritório USA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Data limite</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>Responsável</label>
+          <select>
+            <option>Jordaniel — Analista TI</option>
+            <option>A definir</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>🗂️ Categoria</h3>
+      <div class="category-grid">
+        <div class="cat-opt selected"><span class="cat-emoji">🌐</span><div class="cat-label">Rede / VPN</div></div>
+        <div class="cat-opt"><span class="cat-emoji">💻</span><div class="cat-label">Hardware</div></div>
+        <div class="cat-opt"><span class="cat-emoji">⚙️</span><div class="cat-label">Software</div></div>
+        <div class="cat-opt"><span class="cat-emoji">🗄️</span><div class="cat-label">Servidor</div></div>
+        <div class="cat-opt"><span class="cat-emoji">🔒</span><div class="cat-label">Segurança</div></div>
+        <div class="cat-opt"><span class="cat-emoji">📦</span><div class="cat-label">Outros</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>🚨 Prioridade</h3>
+      <div class="priority-grid">
+        <div class="priority-opt"><span class="priority-emoji">🟢</span><div class="priority-label">Baixa</div></div>
+        <div class="priority-opt selected-media"><span class="priority-emoji">🟡</span><div class="priority-label">Média</div></div>
+        <div class="priority-opt"><span class="priority-emoji">🔴</span><div class="priority-label">Alta</div></div>
+        <div class="priority-opt"><span class="priority-emoji">🟣</span><div class="priority-label">Crítica</div></div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>📝 Descrição detalhada</h3>
+      <div class="form-group">
+        <label>Descreva o problema ou tarefa <span>*</span></label>
+        <textarea placeholder="Descreva detalhadamente o problema encontrado, o que foi tentado anteriormente, e qualquer informação relevante para a resolução..."></textarea>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label>Anexos (opcional)</label>
+        <div class="file-upload">
+          <div style="font-size:32px">📎</div>
+          <p>Arraste arquivos aqui ou clique para selecionar<br><small>PNG, JPG, PDF — máximo 10MB</small></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="chamados.html" class="btn btn-outline">Cancelar</a>
+      <a href="chamado_detalhe.html" class="btn btn-primary">✓ Abrir Chamado</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

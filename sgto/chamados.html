@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGTO — Chamados</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B1C3F;--blue:#1A56DB;--cyan:#06B6D4;--light:#F4F7FF;--white:#FFFFFF;--gray:#8896B3;--border:#E2E8F5;--sidebar:#0D2055;--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--purple:#8B5CF6;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);display:flex;min-height:100vh;}
+  .sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh;}
+  .logo{padding:0 24px 32px;display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;}
+  .nav-section{padding:0 16px;margin-bottom:8px;}
+  .nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:2px;}
+  .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+  .nav-item.active{background:rgba(26,86,219,0.4);color:white;font-weight:500;}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .badge{margin-left:auto;background:var(--blue);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+  .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.1);}
+  .user-info{display:flex;align-items:center;gap:10px;}
+  .avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+  .user-name{font-size:13px;font-weight:500;color:white;}
+  .user-role{font-size:11px;color:var(--gray);}
+  .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+  .topbar{background:white;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--navy);}
+  .btn{padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--blue);color:white;box-shadow:0 2px 8px rgba(26,86,219,0.3);}
+  .btn-outline{background:white;color:var(--navy);border:1.5px solid var(--border);}
+  .content{padding:28px 32px;}
+  .filters{background:white;border-radius:12px;border:1px solid var(--border);padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .filter-input{flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--navy);background:var(--light);outline:none;}
+  .filter-input:focus{border-color:var(--blue);}
+  .filter-select{padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--navy);background:var(--light);outline:none;cursor:pointer;}
+  .table-card{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{padding:14px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);background:#FAFBFF;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:#F7F9FF;}
+  td{padding:14px 16px;font-size:13px;color:var(--navy);}
+  .id-cell{font-weight:600;color:var(--blue);font-size:12px;}
+  .status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+  .status-badge.aberto{background:#EEF3FF;color:var(--blue);}
+  .status-badge.andamento{background:#FEF3C7;color:#92400E;}
+  .status-badge.concluido{background:#D1FAE5;color:#065F46;}
+  .status-badge.cancelado{background:#F3F4F6;color:#6B7280;}
+  .priority-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .pag{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid var(--border);}
+  .pag-info{font-size:13px;color:var(--gray);}
+  .pag-btns{display:flex;gap:6px;}
+  .pag-btn{padding:6px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;cursor:pointer;background:white;color:var(--navy);transition:all .2s;}
+  .pag-btn:hover,.pag-btn.active{border-color:var(--blue);color:var(--blue);}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">✈</div><div class="logo-text">SGTO</div></div>
+  <div class="nav-section">
+    <div class="nav-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><span class="icon">⊞</span> Dashboard</a>
+    <a href="kanban.html" class="nav-item"><span class="icon">▦</span> Kanban <span class="badge">12</span></a>
+    <a href="novo_chamado.html" class="nav-item"><span class="icon">＋</span> Novo Chamado</a>
+    <a href="chamados.html" class="nav-item active"><span class="icon">☰</span> Todos os Chamados</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Gestão</div>
+    <a href="calendario.html" class="nav-item"><span class="icon">📅</span> Calendário</a>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Usuários</a>
+    <a href="#" class="nav-item"><span class="icon">📊</span> Relatórios</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="avatar">J</div><div><div class="user-name">Jordaniel</div><div class="user-role">Analista de TI</div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Todos os Chamados</div>
+    <a href="novo_chamado.html" class="btn btn-primary">＋ Novo Chamado</a>
+  </div>
+
+  <div class="content">
+    <div class="filters">
+      <input class="filter-input" type="text" placeholder="🔍  Buscar chamado por título, ID ou solicitante...">
+      <select class="filter-select"><option>Todos os status</option><option>Aberto</option><option>Em Andamento</option><option>Concluído</option></select>
+      <select class="filter-select"><option>Todas as prioridades</option><option>Crítica</option><option>Alta</option><option>Média</option><option>Baixa</option></select>
+      <select class="filter-select"><option>Todas as categorias</option><option>Rede</option><option>Servidor</option><option>Hardware</option><option>Software</option><option>Segurança</option></select>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Categoria</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+            <th>Solicitante</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0044</td>
+            <td>Banco Firebird não respondendo — Matriz</td>
+            <td>Banco de Dados</td>
+            <td><span class="priority-dot" style="background:var(--purple)"></span>Crítica</td>
+            <td><span class="status-badge aberto">● Aberto</span></td>
+            <td>Adm. Financeiro</td>
+            <td>06/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0043</td>
+            <td>Inventário de equipamentos — filial SP</td>
+            <td>Infraestrutura</td>
+            <td><span class="priority-dot" style="background:var(--green)"></span>Baixa</td>
+            <td><span class="status-badge aberto">● Aberto</span></td>
+            <td>Jordaniel</td>
+            <td>05/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0042</td>
+            <td>Atualizar política de AppLocker no AD</td>
+            <td>Segurança</td>
+            <td><span class="priority-dot" style="background:var(--yellow)"></span>Média</td>
+            <td><span class="status-badge aberto">● Aberto</span></td>
+            <td>Jordaniel</td>
+            <td>04/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0041</td>
+            <td>Configurar VPN WireGuard para filial PT6A</td>
+            <td>Rede</td>
+            <td><span class="priority-dot" style="background:var(--red)"></span>Alta</td>
+            <td><span class="status-badge aberto">● Aberto</span></td>
+            <td>Jordaniel</td>
+            <td>03/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0040</td>
+            <td>Treinamento usuários — novo sistema ERP</td>
+            <td>ERP Sankhya</td>
+            <td><span class="priority-dot" style="background:var(--green)"></span>Baixa</td>
+            <td><span class="status-badge andamento">● Em Andamento</span></td>
+            <td>RH</td>
+            <td>02/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0039</td>
+            <td>Configurar backup automático TrueNAS</td>
+            <td>Storage</td>
+            <td><span class="priority-dot" style="background:var(--yellow)"></span>Média</td>
+            <td><span class="status-badge andamento">● Em Andamento</span></td>
+            <td>Jordaniel</td>
+            <td>01/04/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0038</td>
+            <td>Migração servidor Windows 2012 → 2025</td>
+            <td>Servidor</td>
+            <td><span class="priority-dot" style="background:var(--red)"></span>Alta</td>
+            <td><span class="status-badge andamento">● Em Andamento</span></td>
+            <td>Jordaniel</td>
+            <td>30/03/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0037</td>
+            <td>Investigar ataque BEC — e-mail fraudulento</td>
+            <td>Segurança</td>
+            <td><span class="priority-dot" style="background:var(--red)"></span>Alta</td>
+            <td><span class="status-badge concluido">✓ Concluído</span></td>
+            <td>Diretoria</td>
+            <td>28/03/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0036</td>
+            <td>Correção cache Firebird — DefaultDbCachePages</td>
+            <td>Banco de Dados</td>
+            <td><span class="priority-dot" style="background:var(--yellow)"></span>Média</td>
+            <td><span class="status-badge concluido">✓ Concluído</span></td>
+            <td>Jordaniel</td>
+            <td>25/03/2026</td>
+          </tr>
+          <tr onclick="window.location='chamado_detalhe.html'">
+            <td class="id-cell">#0035</td>
+            <td>Instalar impressora — setor financeiro</td>
+            <td>Hardware</td>
+            <td><span class="priority-dot" style="background:var(--green)"></span>Baixa</td>
+            <td><span class="status-badge concluido">✓ Concluído</span></td>
+            <td>Financeiro</td>
+            <td>22/03/2026</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pag">
+        <div class="pag-info">Exibindo 10 de 47 chamados</div>
+        <div class="pag-btns">
+          <button class="pag-btn">← Anterior</button>
+          <button class="pag-btn active">1</button>
+          <button class="pag-btn">2</button>
+          <button class="pag-btn">3</button>
+          <button class="pag-btn">Próxima →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
