@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SGTO — Calendário</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B1C3F;--blue:#1A56DB;--cyan:#06B6D4;--light:#F4F7FF;--white:#FFFFFF;--gray:#8896B3;--border:#E2E8F5;--sidebar:#0D2055;--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--purple:#8B5CF6;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--light);display:flex;min-height:100vh;}
+  .sidebar{width:240px;background:var(--sidebar);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh;}
+  .logo{padding:0 24px 32px;display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white;}
+  .nav-section{padding:0 16px;margin-bottom:8px;}
+  .nav-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:6px;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:2px;}
+  .nav-item:hover{background:rgba(255,255,255,0.08);color:white;}
+  .nav-item.active{background:rgba(26,86,219,0.4);color:white;font-weight:500;}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .badge{margin-left:auto;background:var(--blue);color:white;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;}
+  .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.1);}
+  .user-info{display:flex;align-items:center;gap:10px;}
+  .avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;}
+  .user-name{font-size:13px;font-weight:500;color:white;}
+  .user-role{font-size:11px;color:var(--gray);}
+  .main{margin-left:240px;flex:1;display:flex;flex-direction:column;}
+  .topbar{background:white;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+  .topbar-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--navy);}
+  .btn{padding:8px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .btn-outline{background:white;color:var(--navy);border:1.5px solid var(--border);}
+  .content{padding:28px 32px;display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;}
+  .cal-card{background:white;border-radius:14px;border:1px solid var(--border);overflow:hidden;}
+  .cal-header{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+  .cal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+  .cal-nav{display:flex;gap:8px;}
+  .cal-nav button{padding:6px 14px;border:1.5px solid var(--border);border-radius:6px;background:white;cursor:pointer;font-size:13px;color:var(--navy);transition:all .2s;}
+  .cal-nav button:hover{border-color:var(--blue);color:var(--blue);}
+  .cal-grid{padding:20px;}
+  .day-names{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px;}
+  .day-name{text-align:center;font-size:11px;font-weight:600;color:var(--gray);text-transform:uppercase;padding:8px;}
+  .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .day{min-height:80px;border-radius:8px;padding:6px;border:1.5px solid transparent;transition:all .2s;cursor:pointer;position:relative;}
+  .day:hover{border-color:var(--border);background:var(--light);}
+  .day.today{border-color:var(--blue);background:#EEF3FF;}
+  .day.other-month{opacity:0.35;}
+  .day-num{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:4px;}
+  .day.today .day-num{color:var(--blue);font-weight:700;}
+  .event{font-size:10px;padding:2px 6px;border-radius:4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+  .event.red{background:#FEE2E2;color:#991B1B;}
+  .event.yellow{background:#FEF3C7;color:#92400E;}
+  .event.blue{background:#EEF3FF;color:#1E40AF;}
+  .event.green{background:#D1FAE5;color:#065F46;}
+  .event.purple{background:#EDE9FE;color:#5B21B6;}
+  .sidebar-card{background:white;border-radius:14px;border:1px solid var(--border);padding:20px;margin-bottom:16px;}
+  .sidebar-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+  .event-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+  .event-item:last-child{border-bottom:none;}
+  .event-date{min-width:40px;text-align:center;background:var(--light);border-radius:8px;padding:6px 4px;}
+  .event-day{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--navy);display:block;line-height:1;}
+  .event-month{font-size:10px;color:var(--gray);text-transform:uppercase;}
+  .event-info{}
+  .event-title{font-size:13px;font-weight:500;color:var(--navy);line-height:1.3;}
+  .event-meta{font-size:11px;color:var(--gray);margin-top:3px;}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">✈</div><div class="logo-text">SGTO</div></div>
+  <div class="nav-section">
+    <div class="nav-label">Principal</div>
+    <a href="dashboard.html" class="nav-item"><span class="icon">⊞</span> Dashboard</a>
+    <a href="kanban.html" class="nav-item"><span class="icon">▦</span> Kanban <span class="badge">12</span></a>
+    <a href="novo_chamado.html" class="nav-item"><span class="icon">＋</span> Novo Chamado</a>
+    <a href="chamados.html" class="nav-item"><span class="icon">☰</span> Todos os Chamados</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;">
+    <div class="nav-label">Gestão</div>
+    <a href="calendario.html" class="nav-item active"><span class="icon">📅</span> Calendário</a>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Usuários</a>
+    <a href="#" class="nav-item"><span class="icon">📊</span> Relatórios</a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info"><div class="avatar">J</div><div><div class="user-name">Jordaniel</div><div class="user-role">Analista de TI</div></div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">Calendário de Prazos</div>
+    <button class="btn btn-outline">📅 Hoje</button>
+  </div>
+
+  <div class="content">
+    <div class="cal-card">
+      <div class="cal-header">
+        <div class="cal-title">Abril 2026</div>
+        <div class="cal-nav">
+          <button>← Mar</button>
+          <button>Mai →</button>
+        </div>
+      </div>
+      <div class="cal-grid">
+        <div class="day-names">
+          <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
+          <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+        </div>
+        <div class="days-grid">
+          <!-- Semana 1 -->
+          <div class="day other-month"><div class="day-num">29</div></div>
+          <div class="day other-month"><div class="day-num">30</div></div>
+          <div class="day other-month"><div class="day-num">31</div></div>
+          <div class="day"><div class="day-num">1</div></div>
+          <div class="day"><div class="day-num">2</div><div class="event blue">#0040 ERP</div></div>
+          <div class="day"><div class="day-num">3</div><div class="event red">#0041 VPN</div></div>
+          <div class="day"><div class="day-num">4</div><div class="event yellow">#0042 AD</div></div>
+          <!-- Semana 2 -->
+          <div class="day"><div class="day-num">5</div><div class="event blue">#0043 Inv.</div></div>
+          <div class="day today"><div class="day-num">6</div><div class="event purple">#0044 DB 🔴</div><div class="event yellow">#0039 Backup</div></div>
+          <div class="day"><div class="day-num">7</div><div class="event blue">Entrega PI</div></div>
+          <div class="day"><div class="day-num">8</div></div>
+          <div class="day"><div class="day-num">9</div></div>
+          <div class="day"><div class="day-num">10</div></div>
+          <div class="day"><div class="day-num">11</div></div>
+          <!-- Semana 3 -->
+          <div class="day"><div class="day-num">12</div></div>
+          <div class="day"><div class="day-num">13</div><div class="event red">#0038 Server</div></div>
+          <div class="day"><div class="day-num">14</div></div>
+          <div class="day"><div class="day-num">15</div></div>
+          <div class="day"><div class="day-num">16</div></div>
+          <div class="day"><div class="day-num">17</div></div>
+          <div class="day"><div class="day-num">18</div></div>
+          <!-- Semana 4 -->
+          <div class="day"><div class="day-num">19</div></div>
+          <div class="day"><div class="day-num">20</div></div>
+          <div class="day"><div class="day-num">21</div></div>
+          <div class="day"><div class="day-num">22</div></div>
+          <div class="day"><div class="day-num">23</div></div>
+          <div class="day"><div class="day-num">24</div></div>
+          <div class="day"><div class="day-num">25</div></div>
+          <!-- Semana 5 -->
+          <div class="day"><div class="day-num">26</div></div>
+          <div class="day"><div class="day-num">27</div></div>
+          <div class="day"><div class="day-num">28</div></div>
+          <div class="day"><div class="day-num">29</div></div>
+          <div class="day"><div class="day-num">30</div></div>
+          <div class="day other-month"><div class="day-num">1</div></div>
+          <div class="day other-month"><div class="day-num">2</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sidebar-card">
+        <h3>📌 Próximos vencimentos</h3>
+        <div class="event-item">
+          <div class="event-date"><span class="event-day">06</span><span class="event-month">Abr</span></div>
+          <div class="event-info">
+            <div class="event-title"><span class="dot" style="background:var(--purple)"></span>#0044 Firebird — Matriz</div>
+            <div class="event-meta">Crítico · Hoje</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><span class="event-day">06</span><span class="event-month">Abr</span></div>
+          <div class="event-info">
+            <div class="event-title"><span class="dot" style="background:var(--yellow)"></span>#0039 Backup TrueNAS</div>
+            <div class="event-meta">Média · Hoje</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><span class="event-day">07</span><span class="event-month">Abr</span></div>
+          <div class="event-info">
+            <div class="event-title"><span class="dot" style="background:var(--blue)"></span>Entrega Projeto Integrador</div>
+            <div class="event-meta">Acadêmico · Amanhã</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="event-date"><span class="event-day">13</span><span class="event-month">Abr</span></div>
+          <div class="event-info">
+            <div class="event-title"><span class="dot" style="background:var(--red)"></span>#0038 Migração Server</div>
+            <div class="event-meta">Alta · Em 7 dias</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>🏷️ Legenda</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="dot" style="background:var(--purple)"></span> Crítico</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="dot" style="background:var(--red)"></span> Alta prioridade</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="dot" style="background:var(--yellow)"></span> Média prioridade</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="dot" style="background:var(--blue)"></span> Baixa / Geral</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="dot" style="background:var(--green)"></span> Concluído</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
